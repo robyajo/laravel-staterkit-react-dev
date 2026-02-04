@@ -6,6 +6,7 @@ import '../css/app.css';
 import { initializeTheme } from './hooks/use-appearance';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
+import { Toaster as SonnerToaster } from '@/components/ui/sonner';
 
 const queryClient = new QueryClient();
 
@@ -23,6 +24,7 @@ createInertiaApp({
 
         root.render(
             <StrictMode>
+                <SonnerToaster />
                 <QueryClientProvider client={queryClient}>
                     <App {...props} />
                     <ReactQueryDevtools initialIsOpen={false} />

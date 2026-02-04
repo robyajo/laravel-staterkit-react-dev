@@ -10,10 +10,7 @@ use Inertia\Response;
 class UserController extends Controller
 {
 
-    public function IndexPage(): Response
-    {
-        return Inertia::render('users/index');
-    }
+
     /**
      * Display a listing of the resource.
      */
@@ -31,7 +28,24 @@ class UserController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|string|email|max:255|unique:users',
+            'password' => 'required|string|min:8',
+            'role' => 'nullable|string',
+        ]);
+
+        $user = User::create([
+            'name' => $validated['name'],
+            'email' => $validated['email'],
+            'password' => bcrypt($validated['password']),
+            'role' => $validated['role'] ?? 'user',
+        ]);
+
+        return response()->json([
+            'message' => 'User Created Successfully',
+            'data' => $user,
+        ], 201);
     }
 
     /**
@@ -39,7 +53,16 @@ class UserController extends Controller
      */
     public function show(string $id)
     {
-        //
+        $data = User::find($id);
+        if (!$data) {
+            return response()->json([
+                'message' => 'User Not Found',
+            ], 404);
+        }
+        return response()->json([
+            'message' => 'User Show',
+            'data' => $data,
+        ]);
     }
 
     /**
@@ -47,7 +70,31 @@ class UserController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        $user = User::find($id);
+
+        if (!$user) {
+            return response()->json([
+                'message' => 'User Not Found',
+            ], 404);
+        }
+
+        $validated = $request->validate([
+            'name' => 'sometimes|required|string|max:255',
+            'email' => 'sometimes|required|string|email|max:255|unique:users,email,' . $id,
+            'role' => 'nullable|string',
+            'password' => 'nullable|string|min:8',
+        ]);
+
+        if (isset($validated['password'])) {
+            $validated['password'] = bcrypt($validated['password']);
+        }
+
+        $user->update($validated);
+
+        return response()->json([
+            'message' => 'User Updated Successfully',
+            'data' => $user,
+        ]);
     }
 
     /**
@@ -55,6 +102,18 @@ class UserController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        $user = User::find($id);
+
+        if (!$user) {
+            return response()->json([
+                'message' => 'User Not Found',
+            ], 404);
+        }
+
+        $user->delete();
+
+        return response()->json([
+            'message' => 'User Deleted Successfully',
+        ]);
     }
 }
