@@ -15,31 +15,9 @@ import {
 import { dashboard } from '@/routes';
 import type { NavItem, SharedData } from '@/types';
 import AppLogo from './app-logo';
-
-const adminNavItems: NavItem[] = [
-    {
-        title: 'Dashboard',
-        href: dashboard(),
-        icon: LayoutGrid,
-    },
-    {
-        title: 'User Management',
-        href: 'user-management',
-        icon: User2,
-    },
-];
-const userNavItems: NavItem[] = [
-    {
-        title: 'Dashboard',
-        href: dashboard(),
-        icon: LayoutGrid,
-    },
-    {
-        title: 'User Profile',
-        href: 'user',
-        icon: User,
-    },
-];
+import { NavMainAdmin } from './nav-main-admin';
+import { NavMainDashboard } from './nav-main-dashboard';
+import { NavMainUser } from './nav-main-user';
 
 const footerNavItems: NavItem[] = [
     {
@@ -72,11 +50,8 @@ export function AppSidebar() {
             </SidebarHeader>
 
             <SidebarContent>
-                {user?.role === 'admin' ? (
-                    <NavMain items={adminNavItems} role="admin" />
-                ) : (
-                    <NavMain items={userNavItems} role="user" />
-                )}
+                <NavMainDashboard />
+                {user?.role === 'admin' ? <NavMainAdmin /> : <NavMainUser />}
             </SidebarContent>
 
             <SidebarFooter>
